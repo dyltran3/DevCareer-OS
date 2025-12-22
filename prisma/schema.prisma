@@ -1,11 +1,32 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// server/prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = "file:./dev.db" // Database sẽ được lưu thành file dev.db
+}
+
+model Task {
+  id          Int      @id @default(autoincrement()) // ID tự tăng (1, 2, 3...)
+  userId      String
+  title       String
+  description String?  // Dấu ? nghĩa là có thể null
+  status      String   @default("todo")
+  priority    String   @default("medium")
+  deadline    String?  // Lưu ngày tháng dưới dạng String cho đơn giản
+  createdAt   DateTime @default(now())
+}
+
+model Roadmap {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  name        String
+  // SQLite không có kiểu JSON native tốt như Postgres
+  // Nên ta lưu JSON dưới dạng String, khi lấy ra sẽ parse lại
+  data        String   
+  chatHistory String   @default("[]") 
+  createdAt   DateTime @default(now())
 }
