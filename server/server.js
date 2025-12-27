@@ -69,3 +69,29 @@ app.post('/api/roadmap', async (req, res) => {
     }
 });
 
+// Lưu tin nhắn chat vào Roadmap
+app.post('/api/roadmap/:id/chat', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { role, text} = req.body;
+
+        // Lấy roadmap hiện tại
+        const roadmap = await prisma.roadmap.findUnique({ where: { id } });
+        if (!roadmap) return res.status(404).json({ error: 'Roadmap not found' });
+
+    res.json({ success: true });
+    } catch (error) {}
+        res.status(500).json({ error: error.message });
+});
+
+// Xóa một Roadmap
+app.delete('/api/roadmap/:id', async (req, res) => {
+    try {
+        await prisma.roadmap.delete({
+            where: { id: parseInt(req.params.id) }
+        });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
