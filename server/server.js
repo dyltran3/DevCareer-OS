@@ -28,3 +28,44 @@ const parseRoadmap = ( roadmap ) => {
 
 // --- 1. Roadmap APIs ---
 // Lấy danh sách tất cả Roadmaps - Chỉ lấy tên để hiển thị list
+app.get('/api/roadmaps/:userId', async (req, res) => {
+    try {
+        const list = await prisma.roadmap.findMany({
+            where: { userId: req.params.userId },
+            orderBy: { createdAt: 'desc' },
+            select: {id: true, name: true, createdAt: true} // Chỉ lấy các trường cần thiết
+            });
+            res.json(list);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+// Lấy chi tiết một Roadmap (Parse JSON string ra Object)
+app.get('/api/roadmap/:id', async (req, res) => {
+    try {
+        const roadmap = await prisma.roadmap.findUnique({
+            where: { id: parseInt(req.params.id) }
+        });
+        res.json(parseRoadmap(roadmap));
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+// Tạo mới một Roadmap
+app.post('/api/roadmap', async (req, res) => {
+    try {
+        const { userId, name, data } = req.body;
+        const newRoadmap = await prisma.roadmap.create({
+            data: {
+                userId,
+                name,
+                data: JSON.stringify(data),
+                chatHistory: JSON.stringify([])
+            }
+        });
+        res.json(parseRoadmap(newRoadmap));
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
