@@ -59,7 +59,7 @@ app.post('/api/roadmap', async (req, res) => {
             data: {
                 userId,
                 name,
-                data: JSON.stringify(data),
+                data: JSON.stringify(data), // Chuyển JSON thành string để lưu vào SQLite
                 chatHistory: JSON.stringify([])
             }
         });
